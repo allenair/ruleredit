@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zxtech.ruleredit.bean.LogicUnitBean;
@@ -19,20 +24,37 @@ import com.zxtech.ruleredit.util.FileTools;
 
 @RestController
 public class MyController {
+	private static Logger log = LoggerFactory.getLogger(MyController.class);
+	
 	@Autowired
     private Environment env;
 	
+	@Value("${app.default.filename}")
+	private String filename;
+	
 	@RequestMapping(value="/testjson.do")
-	public Map<String, Object> echoJson() {
+	public Map<String, Object> echoJson(@RequestParam String name) {
 		Map<String, Object> map = new HashMap<>();
-		map.put("name", "aa");
+		map.put("name", name);
 		map.put("num", 12);
 		return map;
 	}
 	
 	@RequestMapping(value="/teststr.do")
 	public String echoStr() {
+		log.debug("debug===filename:"+filename);
+		log.info("info===filename:"+filename);
+		log.error("error===filename:"+filename);
 		return "hello";
+	}
+	
+	@RequestMapping(value="/testpath/{name}/{id}")
+	public Map<String, Object> echoByInput(@PathVariable String name, @PathVariable int id){
+		Map<String, Object> map = new HashMap<>();
+		map.put("name", name);
+		map.put("sex", "男");
+		map.put("id", id);
+		return map;
 	}
 	
 	@RequestMapping(value="/loadbean.do", method= {RequestMethod.GET})
